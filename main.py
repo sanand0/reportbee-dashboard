@@ -1,7 +1,7 @@
 #!/usr/bin/python
 
 '''
-Usage: main.py marks-file.csv
+Usage: main.py marks-file.csv [sort]
 
 Format of marks file:
 Roll,Name,English,Mathematics,Social Science,Science,Tamil,French,Hindi,Sanskrit,IT,CompScience
@@ -38,7 +38,9 @@ for row in students:
     row.setdefault('percentile', {})
     row.setdefault('percent', percent_total)
 
-students = sorted(students, key=operator.itemgetter('percent'), reverse=True)
+if len(sys.argv) > 2:
+    if sys.argv[2] == 'sort':
+        students = sorted(students, key=operator.itemgetter('percent'), reverse=True)
 
 # Compute subject[] parameters
 for subject in subjects:
