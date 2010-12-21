@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"><head><title>{{ title }}</title>
+<style>
+/* YUI3 CSS reset */html{color:#000;background:#FFF;}body,div,dl,dt,dd,ul,ol,li,h1,h2,h3,h4,h5,h6,pre,code,form,fieldset,legend,input,textarea,p,blockquote,th,td{margin:0;padding:0;}table{border-collapse:collapse;border-spacing:0;}fieldset,img{border:0;}address,caption,cite,code,dfn,em,strong,th,var{font-style:normal;font-weight:normal;}li{list-style:none;}caption,th{text-align:left;}h1,h2,h3,h4,h5,h6{font-size:100%;font-weight:normal;}q:before,q:after{content:'';}abbr,acronym{border:0;font-variant:normal;}sup{vertical-align:text-top;}sub{vertical-align:text-bottom;}input,textarea,select{font-family:inherit;font-size:inherit;font-weight:inherit;}input,textarea,select{*font-size:100%;}legend{color:#000;}
+/* YUI3 CSS fonts */body{font:12px/1.5 "Gill Sans","Gill Sans MT",sans-serif;*font-size:medium;*font:x-medium;}select,input,button,textarea{font-size:99%;}table{font-size:inherit;font:100%;}pre,code,kbd,samp,tt{font-family:monospace;*font-size:108%;line-height:100%;}
+/* YUI3 CSS grids */.yui3-g{letter-spacing:-0.31em;*letter-spacing:normal;word-spacing:-0.43em;}.yui3-u,.yui3-u-1,.yui3-u-1-2,.yui3-u-1-3,.yui3-u-2-3,.yui3-u-1-4,.yui3-u-3-4,.yui3-u-1-5,.yui3-u-2-5,.yui3-u-3-5,.yui3-u-4-5,.yui3-u-1-6,.yui3-u-5-6,.yui3-u-1-8,.yui3-u-3-8,.yui3-u-5-8,.yui3-u-7-8,.yui3-u-1-12,.yui3-u-5-12,.yui3-u-7-12,.yui3-u-11-12,.yui3-u-1-24,.yui3-u-5-24,.yui3-u-7-24,.yui3-u-11-24,.yui3-u-13-24,.yui3-u-17-24,.yui3-u-19-24,.yui3-u-23-24{display:inline-block;zoom:1;*display:inline;letter-spacing:normal;word-spacing:normal;vertical-align:top;}.yui3-u-1{display:block;}.yui3-u-1-2{width:50%;}.yui3-u-1-3{width:33.33333%;}.yui3-u-2-3{width:66.66666%;}.yui3-u-1-4{width:25%;}.yui3-u-3-4{width:75%;}.yui3-u-1-5{width:20%;}.yui3-u-2-5{width:40%;}.yui3-u-3-5{width:60%;}.yui3-u-4-5{width:80%;}.yui3-u-1-6{width:16.656%;}.yui3-u-5-6{width:83.33%;}.yui3-u-1-8{width:12.5%;}.yui3-u-3-8{width:37.5%;}.yui3-u-5-8{width:62.5%;}.yui3-u-7-8{width:87.5%;}.yui3-u-1-12{width:8.3333%;}.yui3-u-5-12{width:41.6666%;}.yui3-u-7-12{width:58.3333%;}.yui3-u-11-12{width:91.6666%;}.yui3-u-1-24{width:4.1666%;}.yui3-u-5-24{width:20.8333%;}.yui3-u-7-24{width:29.1666%;}.yui3-u-11-24{width:45.8333%;}.yui3-u-13-24{width:54.1666%;}.yui3-u-17-24{width:70.8333%;}.yui3-u-19-24{width:79.1666%;}.yui3-u-23-24{width:95.8333%;}
+
+body { margin: 0 auto 20px auto; width: 1300px; }
+h1 { font-weight: bold; font-size: 400%; font-variant: small-caps; background-color:#035045; color:#fff; height:75px; margin-bottom: 0.5em; }
+h1 img { float:right; }
+hr { page-break-after: always; visibility:hidden; }
+</style>
+</head><body>
+
+<h1>{{ title }} <img src="rb-logo-bg.png" height="75" alt="(ReportBee)" /> </h1>
+{% set width = 100 %}
+{% set height = 20 %}
+{% set startx = 250 %}
+{% set startxd = startx + width + 15 %}
+{% set colors = ['#000000', '#1f497d', '#4f81bd', '#c0504d', '#9bbb59', '#8064a2', '#4bacc6', '#f79646', '#ceb966', '#9cb084', '#6bb1c9', '#6585cf', '#7e6bc9', '#a379bb'] %}
+<svg width="1300" height="{{ len(students)*20 + 60 }}" xmlns="http://www.w3.org/2000/svg">
+ <text x="{{ startx + width/2 }}" y="35" style="dominant-baseline:middle;text-anchor:middle;">Rank</text>
+ {% for j, subject in enumerate(subjectlist) %}
+  {% for k, freq in enumerate(subjects[subject]['hist']) %}
+   {% set l = len(subjects[subject]['hist']) %}
+   <rect x="{{ startxd + width*j + k*width/l}}" y="{{5+(1-freq)*20}}" width="{{width/l-1}}" height="{{freq*20}}" style="fill:{{ colors[j] }}"></rect>
+  {% end %}
+  <text x="{{ startxd + width*j }}" y="35" style="dominant-baseline:middle;text-anchor:start;fill:{{ colors[j] }}">{{ subject }}</text>
+  <text x="{{ startxd + width*j - 1 }}" y="35" style="font-size:7px;dominant-baseline:middle;text-anchor:end">{{ int(subjects[subject]['total']) }}</text>
+ {% end %}
+ {% set starty = 55 %}
+
+ {% for i, student in enumerate(students) %}
+  <text x="{{ startx - 50}}" y="{{ i*height + starty }}" style="dominant-baseline:middle;text-anchor:end">{{ student['Name'] }}</text>
+  <text x="{{ startx - 10}}" y="{{ i*height + starty }}" style="dominant-baseline:middle;text-anchor:end">{{ student['Roll'] }}</text>
+  <rect x="{{ startx + 1*width/4 }}" y="{{ i*height + starty - 5 }}" width="{{ width/2 }}" height="10" style="fill:#ddd;z-index=1" />
+  <line x1="{{ startx + 2*width/4 }}" x2="{{ startx + 2*width/4 }}" y1="{{ i*height + starty - 5 }}" y2="{{ i*height + starty + 5 }}" stroke="#000" stroke-width="0.5" />
+  {% for j, subject in enumerate(subjectlist) %}
+   {% if student['percentile'].get(subject, -1) >= 0 %}
+    <circle cx="{{ startx + student['percentile'][subject]*width }}" cy="{{ i*height + starty }}" r="3" style="fill:{{ colors[j] }};z-index:10" />
+   {% end %}
+   {% if student[subject]['marks'] %}
+    <rect x="{{ startxd + width*j + subjects[subject]['q1' ]*width }}" y="{{ i*height + starty - 5 }}" width="{{ (subjects[subject]['q3' ]-subjects[subject]['q1' ])*width }}" height="10" style="fill:#ddd" />
+    <rect x="{{ startxd + width*j }}" y="{{ i*height + starty - 2 }}" width="{{ int(student[subject]['percent'] * width) }}" height="4" style="fill:{{ colors[j] }}" />
+    <line x1="{{ startxd + width*j + subjects[subject]['q2']*width }}" x2="{{ startxd + width*j + subjects[subject]['q2']*width }}" y1="{{ i*height + starty - 5 }}" y2="{{ i*height + starty + 5 }}" stroke="#000" stroke-width="0.5" />
+    <line x1="{{ startxd + width*j + subjects[subject]['min']*width }}" x2="{{ startxd + width*j + subjects[subject]['min']*width }}" y1="{{ i*height + starty - 3 }}" y2="{{ i*height + starty + 3 }}" stroke="#f00" stroke-width="0.5" />
+    <line x1="{{ startxd + width*j + subjects[subject]['max']*width }}" x2="{{ startxd + width*j + subjects[subject]['max']*width }}" y1="{{ i*height + starty - 3 }}" y2="{{ i*height + starty + 3 }}" stroke="#0c0" stroke-width="0.5" />
+
+    <text x="{{ startxd + width*j - 1 }}" y="{{ i*height + starty - 3}}" style="font-size:7px;dominant-baseline:bottom;text-anchor:start">{{ int(student[subject]['marks']) }}</text>
+    {% if student[subject]['percent'] == subjects[subject]['min'] %}<circle cx="{{ startxd + width*j + int(student[subject]['percent'] * width) }}" cy="{{ i*height + starty }}" r="4" fill="#f00" />{% end %}
+    {% if student[subject]['percent'] == subjects[subject]['max'] %}<circle cx="{{ startxd + width*j + int(student[subject]['percent'] * width) }}" cy="{{ i*height + starty }}" r="4" fill="#0c0" />{% end %}
+   {% end %}
+  {% end %}
+ {% end %}
+</svg>
+
+{% if 1 == 2 %}
+
+<hr/>
+{% set startx = 100 %}
+{% set side = 1000 / len(subjectlist) %}
+<h1>Correlations</h1>
+<svg width="1200" height="{{ len(subjectlist) * side }}" xmlns="http://www.w3.org/2000/svg">
+ {% for i, subject1 in enumerate(subjectlist) %}
+  {% for j, subject2 in enumerate(subjectlist) %}
+   {% if i == j %}<text x="{{ startx + i*side + side/2 }}" y="{{ j*side + side/2 }}" style="dominant-baseline:middle;text-anchor:middle">{{ subject1 }}</text>
+   {% else %}
+    <rect x="{{ startx + i*side }}" y="{{ j*side }}" width="{{ side }}" height="{{ side }}" style="fill:#f00" opacity="{{ 1 - cor[subject1][subject2] }}"/>
+    {% if cor[subject1][subject2] != 1.0 %}<text x="{{ startx + i*side }}" y="{{ j*side }}" style="dominant-baseline:hanging;text-anchor:start">{{ "%0.2f" % cor[subject1][subject2] }}</text>{% end %}
+    <g style="fill:#000">
+    {% for row in students %}{% if (row[subject1]['total'] > 0) and (row[subject2]['total'] > 0) %}
+      <circle cx="{{ startx + i*side + side*row[subject1]['percent'] }}" cy="{{ j*side + side*(1-row[subject2]['percent']) }}" r="1"/>
+    {% end %}{% end %}
+    </g>
+   {% end %}
+  {% end %}
+ {% end %}
+</svg>
+
+{% end %}
+
+</body></html>
