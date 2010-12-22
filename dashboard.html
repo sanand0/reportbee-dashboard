@@ -18,7 +18,7 @@ hr { page-break-after: always; visibility:hidden; }
 {% set startx = 250 %}
 {% set startxd = startx + width + 15 %}
 {% set colors = ['#000000', '#1f497d', '#4f81bd', '#c0504d', '#9bbb59', '#8064a2', '#4bacc6', '#f79646', '#ceb966', '#9cb084', '#6bb1c9', '#6585cf', '#7e6bc9', '#a379bb'] %}
-<svg width="1300" height="{{ len(students)*20 + 60 }}" xmlns="http://www.w3.org/2000/svg">
+<svg width="{{ 400 + len(subjectlist)*width }}" height="{{ len(students)*20 + 60 }}" xmlns="http://www.w3.org/2000/svg">
  <text x="{{ startx + width/2 }}" y="35" style="dominant-baseline:middle;text-anchor:middle;">Rank</text>
  {% for j, subject in enumerate(subjectlist) %}
   {% for k, freq in enumerate(subjects[subject]['hist']) %}
@@ -54,29 +54,24 @@ hr { page-break-after: always; visibility:hidden; }
  {% end %}
 </svg>
 
-{% if 1 == 2 %}
-
 <hr/>
-{% set startx = 100 %}
 {% set side = 1000 / len(subjectlist) %}
 <h1>Correlations</h1>
-<svg width="1200" height="{{ len(subjectlist) * side }}" xmlns="http://www.w3.org/2000/svg">
+<svg width="{{ len(subjectlist)*side }}" height="{{ len(subjectlist) * side }}" xmlns="http://www.w3.org/2000/svg">
  {% for i, subject1 in enumerate(subjectlist) %}
   {% for j, subject2 in enumerate(subjectlist) %}
-   {% if i == j %}<text x="{{ startx + i*side + side/2 }}" y="{{ j*side + side/2 }}" style="dominant-baseline:middle;text-anchor:middle">{{ subject1 }}</text>
+   {% if i == j %}<text x="{{ i*side + side/2 }}" y="{{ j*side + side/2 }}" style="dominant-baseline:middle;text-anchor:middle">{{ subject1 }}</text>
    {% else %}
-    <rect x="{{ startx + i*side }}" y="{{ j*side }}" width="{{ side }}" height="{{ side }}" style="fill:#f00" opacity="{{ 1 - cor[subject1][subject2] }}"/>
-    {% if cor[subject1][subject2] != 1.0 %}<text x="{{ startx + i*side }}" y="{{ j*side }}" style="dominant-baseline:hanging;text-anchor:start">{{ "%0.2f" % cor[subject1][subject2] }}</text>{% end %}
+    <rect x="{{ i*side }}" y="{{ j*side }}" width="{{ side }}" height="{{ side }}" style="fill:#f00" opacity="{{ 1.01 - cor[subject1][subject2] }}"/>
+    {% if cor[subject1][subject2] != 1.0 %}<text x="{{ i*side }}" y="{{ j*side }}" style="dominant-baseline:hanging;text-anchor:start">{{ "%0.2f" % cor[subject1][subject2] }}</text>{% end %}
     <g style="fill:#000">
     {% for row in students %}{% if (row[subject1]['total'] > 0) and (row[subject2]['total'] > 0) %}
-      <circle cx="{{ startx + i*side + side*row[subject1]['percent'] }}" cy="{{ j*side + side*(1-row[subject2]['percent']) }}" r="1"/>
+      <circle cx="{{ i*side + side*row[subject1]['percent'] }}" cy="{{ j*side + side*(1-row[subject2]['percent']) }}" r="1"/>
     {% end %}{% end %}
     </g>
    {% end %}
   {% end %}
  {% end %}
 </svg>
-
-{% end %}
 
 </body></html>
