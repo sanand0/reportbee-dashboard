@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"><head><title>{{ title }}</title>
+<style>
+/* YUI3 CSS reset */html{color:#000;background:#FFF;}body,div,dl,dt,dd,ul,ol,li,h1,h2,h3,h4,h5,h6,pre,code,form,fieldset,legend,input,textarea,p,blockquote,th,td{margin:0;padding:0;}table{border-collapse:collapse;border-spacing:0;}fieldset,img{border:0;}address,caption,cite,code,dfn,em,strong,th,var{font-style:normal;font-weight:normal;}li{list-style:none;}caption,th{text-align:left;}h1,h2,h3,h4,h5,h6{font-size:100%;font-weight:normal;}q:before,q:after{content:'';}abbr,acronym{border:0;font-variant:normal;}sup{vertical-align:text-top;}sub{vertical-align:text-bottom;}input,textarea,select{font-family:inherit;font-size:inherit;font-weight:inherit;}input,textarea,select{*font-size:100%;}legend{color:#000;}
+/* YUI3 CSS fonts */body{font:10px/1.5 "Gill Sans","Gill Sans MT",sans-serif;*font-size:medium;*font:x-medium;}select,input,button,textarea{font-size:99%;}table{font-size:inherit;font:100%;}pre,code,kbd,samp,tt{font-family:monospace;*font-size:108%;line-height:100%;}
+
+body { margin: 0 auto 20px auto; width: 1500px; }
+h1 { font-weight: bold; font-size: 400%; font-variant: small-caps; background-color:#035045; color:#fff; height:75px; margin-bottom: 0.5em; }
+h1 img { float:right; }
+hr { page-break-after: always; visibility:hidden; }
+.marks { text-anchor: middle; fill: #ffffff; font-size: 8px; }
+.total { text-anchor: end; fill: #000000; }
+.grade { fill: #ffffff; }
+.heading .name { font-weight: bold; font-size: 14px; }
+.heading .marks { fill: #000000; }
+
+.A1 { fill: #8064a2; }
+.A2 { fill: #4f81bd; }
+.B1 { fill: #9bbb59; }
+.B2 { fill: #9cb084; }
+.C1 { fill: #ceb966; }
+.C2 { fill: #f79646; }
+.D  { fill: #c0504d; }
+.E1 { fill: #9f3b38; }
+.E2 { fill: #772c2a; }
+</style>
+</head><body>
+
+<h1>{{ title }} <img src="rb-logo-bg.png" height="75" alt="(ReportBee)" /> </h1>
+{% set h=16 %}
+{% set y0=32 %}
+{% for subject in subjectlist %}{% if subjects[subject]['MAX MARKS'] > 0 %}
+<svg width="200" height="{{ (len(students) + len(grades))*h + y0 + 10 }}" xmlns="http://www.w3.org/2000/svg">
+ <g class="heading">
+  <text x= "7" y="16" class="marks fa1">FA1</text>
+  <text x="23" y="16" class="marks fa2">FA2</text>
+  <text x="39" y="16" class="marks sa1">SA1</text>
+  <text x="76" y="16" class="marks total">{{ int(max(student[subject]['MAX MARKS'] for student in students)) }}</text>
+  <text x="78" y="16" class="name">{{ subject }}</text>
+ </g>
+ <g class="data">
+ {% set y = y0 %}
+ {% set pastgrade = '' %}
+ {% for i, student in enumerate(sorted(students, key=lambda x:x[subject]['MARKS'],reverse=True)) %}
+  {% if student[subject]['MAX MARKS'] > 0 %}
+   {% set curgrade = student[subject]['GRADE'] %}
+   {% if curgrade != pastgrade %}
+    {% set pastgrade = curgrade %}
+    <rect x="50" y="{{ y-12 }}" width="150" height="14" class="{{ student[subject]['GRADE'] }}"/>
+    <text x="66" y="{{ y }}" class="name grade">{{ curgrade }}</text>
+    <text x="198" y="{{ y }}" class="name grade" style="text-anchor:end">{{ subjects[subject].get(curgrade, 0) }} / {{ subjects[subject]['COUNT'] }}</text>
+    {% set y = y + h %}
+   {% end %}
+
+   {% set pc = dict([(exam, student[subject][exam]['MARKS'] / student[subject][exam]['MAX MARKS']) for exam in ('FA1', 'FA2', 'SA1') if student[subject][exam]['MAX MARKS'] > 0]) %}
+   {% set pcmin = min(pc.values()) - 0.05 %}
+   {% set pcrange = max(pc.values()) - pcmin + 0.01 %}
+   {% set relpc = dict((exam, (pc[exam] - pcmin) / pcrange) for exam in pc) %}
+   {% if student[subject]['FA1']['MAX MARKS'] > 0 %}
+    <rect x="0" y="{{ y-12 }}" width="13" height="14" class="{{ student[subject]['FA1']['GRADE'] }}"/>
+    <text x="7" y="{{ y }}" class="marks fa1">{{ int(student[subject]['FA1']['MARKS']) }}</text>
+    <rect x="50" y="{{ y-10*relpc['FA1'] }}" width="2" height="{{ 10*relpc['FA1'] }}" />
+   {% end %}
+
+   {% if student[subject]['FA2']['MAX MARKS'] > 0 %}
+    <rect x="16" y="{{ y-12 }}" width="13" height="14" class="{{ student[subject]['FA2']['GRADE'] }}"/>
+    <text x="23" y="{{ y }}" class="marks fa1">{{ int(student[subject]['FA2']['MARKS']) }}</text>
+    <rect x="53" y="{{ y-10*relpc['FA2'] }}" width="2" height="{{ 10*relpc['FA2'] }}" />
+   {% end %}
+
+   {% if student[subject]['SA1']['MAX MARKS'] > 0 %}
+    <rect x="32" y="{{ y-12 }}" width="13" height="14" class="{{ student[subject]['SA1']['GRADE'] }}"/>
+    <text x="39" y="{{ y }}" class="marks fa1">{{ int(student[subject]['SA1']['MARKS']) }}</text>
+    <rect x="56" y="{{ y-10*relpc['SA1'] }}" width="2" height="{{ 10*relpc['SA1'] }}" />
+   {% end %}
+
+   <text x="76" y="{{ y }}" class="marks total">{{ int(student[subject]['MARKS']) }}</text>
+   <text x="78" y="{{ y }}" class="name">{{ student['NAME'] }}</text>
+   {% set y = y + h %}
+  {% end %}
+ {% end %}
+ </g>
+</svg>
+{% end %}{% end %}
+</body></html>
