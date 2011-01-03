@@ -2,9 +2,15 @@
 <html xmlns="http://www.w3.org/1999/xhtml"><head><title>{{ title }}</title>
 <style>
 /* YUI3 CSS reset */html{color:#000;background:#FFF;}body,div,dl,dt,dd,ul,ol,li,h1,h2,h3,h4,h5,h6,pre,code,form,fieldset,legend,input,textarea,p,blockquote,th,td{margin:0;padding:0;}table{border-collapse:collapse;border-spacing:0;}fieldset,img{border:0;}address,caption,cite,code,dfn,em,strong,th,var{font-style:normal;font-weight:normal;}li{list-style:none;}caption,th{text-align:left;}h1,h2,h3,h4,h5,h6{font-size:100%;font-weight:normal;}q:before,q:after{content:'';}abbr,acronym{border:0;font-variant:normal;}sup{vertical-align:text-top;}sub{vertical-align:text-bottom;}input,textarea,select{font-family:inherit;font-size:inherit;font-weight:inherit;}input,textarea,select{*font-size:100%;}legend{color:#000;}
-/* YUI3 CSS fonts */body{font:10px/1.5 "Gill Sans","Gill Sans MT",sans-serif;*font-size:medium;*font:x-medium;}select,input,button,textarea{font-size:99%;}table{font-size:inherit;font:100%;}pre,code,kbd,samp,tt{font-family:monospace;*font-size:108%;line-height:100%;}
+/* YUI3 CSS fonts */body{font:10px/1.5 sans-serif;*font-size:medium;*font:x-medium;}select,input,button,textarea{font-size:99%;}table{font-size:inherit;font:100%;}pre,code,kbd,samp,tt{font-family:monospace;*font-size:108%;line-height:100%;}
 
-body { margin: 0 auto 20px auto; width: 1500px; }
+{% set x0 = len(gradelist)*80+100 %}
+
+{% set x1 = 420 %}
+{% set x2 = x1 + len(subjectlist)*25 + 10 %}
+{% set subw = 120 %}
+
+body { margin: 0 auto 20px auto; width: {{ max((200*len(subjectlist), x2 + len(subjectlist)*subw)) }}px }
 h1 { font-weight: bold; font-size: 400%; font-variant: small-caps; background-color:#035045; color:#fff; height:75px; margin-bottom: 0.5em; }
 h1 img { float:right; }
 hr { page-break-after: always; visibility:hidden; }
@@ -13,6 +19,7 @@ hr { page-break-after: always; visibility:hidden; }
 .grade { fill: #ffffff; }
 .heading .name { font-weight: bold; font-size: 14px; }
 .heading .marks { fill: #000000; }
+#legend { display:block; }
 
 .A1 { fill: #8064a2; }
 .A2 { fill: #4f81bd; }
@@ -23,20 +30,36 @@ hr { page-break-after: always; visibility:hidden; }
 .D  { fill: #c0504d; }
 .E1 { fill: #9f3b38; }
 .E2 { fill: #772c2a; }
+
+.English        { fill: #c0504d; }
+.Mathematics    { fill: #8064a2;}
+.Social-Science { fill: #4bacc6;}
+.Science        { fill: #f79646;}
+.Comp-Science   { fill: #ceb966;}
 </style>
 </head><body>
 
 <h1>{{ title }} <img src="rb-logo-bg.png" height="75" alt="(ReportBee)" /> </h1>
+<svg id="legend" width="1200" height="30" xmlns="http://www.w3.org/2000/svg">
+<text x="4" y="10" style="text-anchor:start;dominant-baseline:middle">Grade Legend:</text>
+{% for i, curgrade in enumerate(gradelist) %}
+ <rect x="{{i*80+ 90}}" y="0" width="78" height="16" class="{{ curgrade }}"/>
+ <text x="{{i*80+129}}" y="10" style="text-anchor:middle;dominant-baseline:middle" class="name grade">{{ curgrade }}: {{ int(grades[i][1]) }} - {{ int(grades[i-1][1] if i > 0 else 100) }}%</text>
+{% end %}
+<rect x="{{ x0 + 0 }}" y= "5" width="2" height="10" class="A1"/>
+<rect x="{{ x0 + 3 }}" y="10" width="2" height= "5" class="C1"/>
+<rect x="{{ x0 + 6 }}" y= "7" width="2" height= "8" class="B1"/>
+<text x="{{ x0 + 15}}" y="10" style="dominant-baseline:middle">Performance in FA1, FA2, SA1</text>
+</svg>
+
 {% set h=16 %}
-{% set y0=32 %}
-{% for subject in subjectlist %}{% if subjects[subject]['MAX MARKS'] > 0 %}
-<svg width="200" height="{{ (len(students) + len(grades))*h + y0 + 10 }}" xmlns="http://www.w3.org/2000/svg">
+{% set y0=h*2 %}
+{% set ymax=y0 + h*(len(students) + len(grades)) %}
+<svg width="{{ 200*len(subjectlist) }}" height="{{ ymax + 100 }}" xmlns="http://www.w3.org/2000/svg">
+{% for si, subject in enumerate(subjectlist) %}
  <g class="heading">
-  <text x= "7" y="16" class="marks fa1">FA1</text>
-  <text x="23" y="16" class="marks fa2">FA2</text>
-  <text x="39" y="16" class="marks sa1">SA1</text>
-  <text x="76" y="16" class="marks total">{{ int(max(student[subject]['MAX MARKS'] for student in students)) }}</text>
-  <text x="78" y="16" class="name">{{ subject }}</text>
+  <text x="{{ 200*si + 26 }}" y="16" class="marks total">{{ int(max(student[subject]['MAX MARKS'] for student in students)) }}</text>
+  <text x="{{ 200*si + 28 }}" y="16" class="name">{{ subject }}</text>
  </g>
  <g class="data">
  {% set y = y0 %}
@@ -44,42 +67,122 @@ hr { page-break-after: always; visibility:hidden; }
  {% for i, student in enumerate(sorted(students, key=lambda x:x[subject]['MARKS'],reverse=True)) %}
   {% if student[subject]['MAX MARKS'] > 0 %}
    {% set curgrade = student[subject]['GRADE'] %}
-   {% if curgrade != pastgrade %}
-    {% set pastgrade = curgrade %}
-    <rect x="50" y="{{ y-12 }}" width="150" height="14" class="{{ student[subject]['GRADE'] }}"/>
-    <text x="66" y="{{ y }}" class="name grade">{{ curgrade }}</text>
-    <text x="198" y="{{ y }}" class="name grade" style="text-anchor:end">{{ subjects[subject].get(curgrade, 0) }} / {{ subjects[subject]['COUNT'] }}</text>
+   {% while curgrade != pastgrade %}
+    {% set gradeindex = gradelist.index(pastgrade) if pastgrade in gradelist else -1 %}
+    {% set pastgrade = gradelist[1 + gradeindex] if gradeindex < len(gradelist) - 1 else curgrade %}
+    <rect x="{{ 200*si +   0 }}" y="{{ y-12 }}" width="197" height="14" class="{{ pastgrade }}"/>
+    <text x="{{ 200*si +  28 }}" y="{{ y }}" class="name grade">{{ pastgrade }}</text>
+    <text x="{{ 200*si + 195 }}" y="{{ y }}" class="name grade" style="text-anchor:end">{{ subjects[subject].get(pastgrade, 0) }} / {{ subjects[subject]['COUNT'] }}</text>
     {% set y = y + h %}
    {% end %}
 
-   {% set pc = dict([(exam, student[subject][exam]['MARKS'] / student[subject][exam]['MAX MARKS']) for exam in ('FA1', 'FA2', 'SA1') if student[subject][exam]['MAX MARKS'] > 0]) %}
-   {% set pcmin = min(pc.values()) - 0.05 %}
-   {% set pcrange = max(pc.values()) - pcmin + 0.01 %}
-   {% set relpc = dict((exam, (pc[exam] - pcmin) / pcrange) for exam in pc) %}
-   {% if student[subject]['FA1']['MAX MARKS'] > 0 %}
-    <rect x="0" y="{{ y-12 }}" width="13" height="14" class="{{ student[subject]['FA1']['GRADE'] }}"/>
-    <text x="7" y="{{ y }}" class="marks fa1">{{ int(student[subject]['FA1']['MARKS']) }}</text>
-    <rect x="50" y="{{ y-10*relpc['FA1'] }}" width="2" height="{{ 10*relpc['FA1'] }}" />
+   {% for j, test in enumerate(tests[subject]) %}
+    {% if student[subject][test]['MAX MARKS'] > 0 %}
+     <rect x="{{ 200*si + j*3 }}" y="{{ y-10*student[subject][test]['BARHEIGHT'] }}" width="2" height="{{ 10*student[subject][test]['BARHEIGHT'] }}" class="{{ grade(student[subject][test]) }}"/>
+    {% end %}
    {% end %}
 
-   {% if student[subject]['FA2']['MAX MARKS'] > 0 %}
-    <rect x="16" y="{{ y-12 }}" width="13" height="14" class="{{ student[subject]['FA2']['GRADE'] }}"/>
-    <text x="23" y="{{ y }}" class="marks fa1">{{ int(student[subject]['FA2']['MARKS']) }}</text>
-    <rect x="53" y="{{ y-10*relpc['FA2'] }}" width="2" height="{{ 10*relpc['FA2'] }}" />
-   {% end %}
-
-   {% if student[subject]['SA1']['MAX MARKS'] > 0 %}
-    <rect x="32" y="{{ y-12 }}" width="13" height="14" class="{{ student[subject]['SA1']['GRADE'] }}"/>
-    <text x="39" y="{{ y }}" class="marks fa1">{{ int(student[subject]['SA1']['MARKS']) }}</text>
-    <rect x="56" y="{{ y-10*relpc['SA1'] }}" width="2" height="{{ 10*relpc['SA1'] }}" />
-   {% end %}
-
-   <text x="76" y="{{ y }}" class="marks total">{{ int(student[subject]['MARKS']) }}</text>
-   <text x="78" y="{{ y }}" class="name">{{ student['NAME'] }}</text>
+   <text x="{{ 200*si + 26 }}" y="{{ y }}" class="marks total">{{ int(student[subject]['MARKS']) }}</text>
+   <text x="{{ 200*si + 28 }}" y="{{ y }}" class="name">{{ student['NAME'] }}</text>
    {% set y = y + h %}
   {% end %}
  {% end %}
+
+ <!-- Draw the rest of the grades -->
+ {% while gradeindex < len(gradelist)-1 %}
+  {% set gradeindex = gradeindex + 1 %}
+  {% set pastgrade = gradelist[gradeindex] %}
+  <rect x="{{ 200*si +   0 }}" y="{{ y-12 }}" width="197" height="14" class="{{ pastgrade }}"/>
+  <text x="{{ 200*si +  28 }}" y="{{ y }}" class="name grade">{{ pastgrade }}</text>
+  <text x="{{ 200*si + 195 }}" y="{{ y }}" class="name grade" style="text-anchor:end">{{ subjects[subject].get(pastgrade, 0) }} / {{ subjects[subject]['COUNT'] }}</text>
+  {% set y = y + h %}
+ {% end %}
  </g>
+
+ <g class="histogram">
+  {% set maxcount = max(subjects[subject].get(g,0) for g in gradelist) %}
+  {% for i, curgrade in enumerate(gradelist) %}
+   {% set pc = float(subjects[subject].get(curgrade,0)) / maxcount %}
+   <rect x="{{ 200*si + i*16 + 28 }}" y="{{ymax + 10 + 50*(1-pc)}}" width="15" height="{{ 50*pc }}" class="{{ curgrade }}" />
+   <rect x="{{ 200*si + i*16 + 28 }}" y="{{ymax + 10 + 53}}" width="15" height="12" class="{{ curgrade }}" />
+   <text x="{{ 200*si + i*16 + 28 + 7.5}}" y="{{ymax + 10 + 55}}" class="name grade" style="text-anchor:middle;dominant-baseline:hanging">{{ curgrade }}</text>
+   <text x="{{ 200*si + i*16 + 28 + 7.5}}" y="{{ymax + 10 + 70}}" style="text-anchor:middle;dominant-baseline:hanging">{{ subjects[subject].get(curgrade,0) }}</text>
+  {% end %}
+ </g>
+{% end %}
 </svg>
-{% end %}{% end %}
+
+
+
+
+<hr/>
+<h1>{{ title }} <img src="rb-logo-bg.png" height="75" alt="(ReportBee)" /> </h1>
+
+<svg id="legend" width="1200" height="30" xmlns="http://www.w3.org/2000/svg">
+<text x="4" y="10" style="text-anchor:start;dominant-baseline:middle">Grade Legend:</text>
+{% for i, curgrade in enumerate(gradelist) %}
+ <rect x="{{i*80+ 90}}" y="0" width="78" height="16" class="{{ curgrade }}"/>
+ <text x="{{i*80+129}}" y="10" style="text-anchor:middle;dominant-baseline:middle" class="name grade">{{ curgrade }}: {{ int(grades[i][1]) }} - {{ int(grades[i-1][1] if i > 0 else 100) }}%</text>
+{% end %}
+{% set x0 = len(gradelist)*80+100 %}
+<rect x="{{ x0 + 0 }}" y= "5" width="2" height="10" class="A1"/>
+<rect x="{{ x0 + 3 }}" y="10" width="2" height= "5" class="C1"/>
+<rect x="{{ x0 + 6 }}" y= "7" width="2" height= "8" class="B1"/>
+<text x="{{ x0 + 15}}" y="10" style="dominant-baseline:middle">Performance in FA1, FA2, SA1</text>
+</svg>
+
+{% set y0 = 50 %}
+<svg id="performance" width="{{ x2 + len(subjectlist)*subw }}" height="{{ len(students)*h + y0 + 10 }}" xmlns="http://www.w3.org/2000/svg">
+<text x="300" y="40" style="text-anchor:middle">Middle</text>
+<text x="195" y="40" style="text-anchor:start">Bottom 25%</text>
+<text x="405" y="40" style="text-anchor:end">Top 25%</text>
+{% for j, subject in enumerate(subjectlist) %}
+ <g class="heading">
+  <text x="{{ x2 + j*subw + 2}}" y="15" class="name" >{{ subject }}</text>
+  <text x="{{ x2 + j*subw + 12 }}" y="28" style="text-anchor:middle">Total</text>
+  <text x="{{ x2 + j*subw + 36 }}" y="40" style="text-anchor:middle;font-size:8px">Graph</text>
+  <text x="{{ x2 + j*subw + 12 }}" y="40" style="text-anchor:middle">{{ int(max(student[subject]['MAX MARKS'] for student in students)) }}</text>
+  <text x="{{ x1 + j*25 + 20 }}" y="28" style="text-anchor:end">{{ subject[0:2] }}</text>
+  <text x="{{ x1 + j*25 + 20 }}" y="40" style="text-anchor:end">{{ int(max(student[subject]['MAX MARKS'] for student in students)) }}</text>
+  {% for k, test in enumerate(tests[subject]) %}
+   <text x="{{ x2 + j*subw + 50 + 7 + k*16 }}" y="28" style="text-anchor:middle;font-size:8px">{{ test }}</text>
+   <text x="{{ x2 + j*subw + 50 + 7 + k*16 }}" y="40" style="text-anchor:middle;font-size:8px">{{ int(max(student[subject][test]['MAX MARKS'] for student in students)) }}</text>
+  {% end %}
+ </g>
+{% end %}
+{% for i, student in enumerate(students) %}
+ {% if not i % 3 %}
+  <rect x="0" y="{{ i*h + y0 - 4}}" width="100%" height="14" style="fill:#ddf" />
+ {% end %}
+ <g>
+  <text x="28" y="{{ i*h + y0 }}" style="dominant-baseline:hanging;text-anchor:end">{{ student['ROLL'] }}</text>
+  <text x="30" y="{{ i*h + y0 }}" style="dominant-baseline:hanging;text-anchor:start">{{ student['NAME'] }}</text>
+  <rect x="195" y="{{ i*h + y0 - 4 }}" width="55" height="14" style="fill:#ccc"/>
+  <rect x="250" y="{{ i*h + y0 - 4 }}" width="50" height="14" style="fill:#ddd"/>
+  <rect x="300" y="{{ i*h + y0 - 4 }}" width="50" height="14" style="fill:#eee"/>
+  <rect x="350" y="{{ i*h + y0 - 4 }}" width="55" height="14" style="fill:#f8f8f8"/>
+  {% for j, subject in enumerate(subjectlist) %}
+   {% if student[subject]['MAX MARKS'] > 0 %}
+    <!-- circle cx="{{ 200 + student[subject]['PERCENTILE']*200 }}" cy="{{ i*h + y0 + 3 + jitter(student, subject) }}" r="3" class="{{ slugify(subject) }}"/ -->
+    <text x="{{ 200 + student[subject]['PERCENTILE']*200 }}" y="{{ i*h + y0 + 3 + jitter(student, subject) }}" style="dominant-baseline:middle;text-anchor:middle;font-size:7px" class="{{ slugify(subject) }}">{{ subject[0:2] }}</text>
+
+    <rect x="{{ x2 + j*subw }}" y="{{ i*h + y0 - 4 }}" rx="2" ry="2" width="25" height="14" class="{{ student[subject]['GRADE'] }}" />
+    <text x="{{ x2 + j*subw + 12 }}" y="{{ i*h + y0 }}" style="dominant-baseline:hanging;text-anchor:middle;fill:#fff">{{ int(student[subject]['MARKS']) }}</text>
+
+    <rect x="{{ x1 + j*25 }}" y="{{ i*h + y0 - 4 }}" rx="2" ry="2" width="22" height="14" class="{{ student[subject]['GRADE'] }}" />
+    <text x="{{ x1 + j*25 + 20 }}" y="{{ i*h + y0 }}" style="dominant-baseline:hanging;text-anchor:end;fill:#fff">{{ int(student[subject]['MARKS']) }}</text>
+
+    {% for k, test in enumerate(tests[subject]) %}
+     {% if student[subject][test]['MAX MARKS'] > 0 %}
+      <rect x="{{ x2 + j*subw + 33 + k*3 }}" y="{{ i*h + y0 + 8 - 10*student[subject][test]['BARHEIGHT'] }}" width="2" height="{{ 10*student[subject][test]['BARHEIGHT'] }}" class="{{ grade(student[subject][test]) }}"/>
+      <rect x="{{ x2 + j*subw + 50 + k*16 }}" y="{{ i*h + y0 - 4 }}" rx="7" ry="7" width="14" height="14" class="{{ student[subject][test]['GRADE'] }}" />
+      <text x="{{ x2 + j*subw + 50 + 7 + k*16 }}" y="{{ i*h + y0 }}" style="dominant-baseline:hanging;text-anchor:middle;fill:#fff;font-size:8px">{{ int(student[subject][test]['MARKS']) }}</text>
+     {% end %}
+    {% end %}
+
+   {% end %}
+  {% end %}
+ </g>
+{% end %}
+</svg>
 </body></html>

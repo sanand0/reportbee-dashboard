@@ -8,7 +8,7 @@ ROLL,NAME,English:FA1:MARKS,English:FA1:MAX MARKS,English:FA2:MARKS,English:FA2:
 A-1,AAKASH DILIP KUMAR MEHTA,37,50,27,50,46,80,30,50,32,50,16,80,44,50,40,50,53,80,21,50,29,50,42,80,,,,,,,,,,,,,36,50,38,50,53,80,,,,,,,,,,,,,,,,,43,50
 '''
 
-import sys, csv, os.path, re, operator
+import sys, csv, os.path, re, operator, random
 from tornado import template
 
 if len(sys.argv) < 2:
@@ -26,13 +26,29 @@ subjectlist = []
 subjects = {}
 tests = {}
 
-grades=zip('A1 A2 B1 B2 C1 C2 D E1 E2'.split(), [90,80,70,60,50,40,32,20,-1])
+gradelist =             'A1 A2 B1 B2 C1 C2 D  E1 E2'.split()
+grades = zip(gradelist, [90,80,70,60,50,40,32,20,-0.0001])
 def grade(item):
     if item['MAX MARKS'] > 0:
         mark = item['MARKS'] * 100.0 / item['MAX MARKS']
         for grade, floor in grades:
             if mark > floor: return grade
     else: return ''
+
+def slugify(s): return re.sub(r'[^A-Za-z0-9_]+', '-', s)
+
+def jitter(student, subject):
+    pc = student[subject]['PERCENTILE']
+    mindiffs = [subject]
+    for sub in subjectlist:
+        if sub != subject and student[sub]['MAX MARKS'] > 0:
+            if abs(student[sub]['PERCENTILE'] - pc) < 0.05:
+                mindiffs.append(sub)
+    mindiffs.sort()
+    j = 0.5
+    if len(mindiffs) > 1:
+        j = float(mindiffs.index(subject)) / (len(mindiffs)-1)
+    return (j-0.5)*8
 
 
 # Compute student[] parameters
@@ -52,14 +68,17 @@ for student in students:
         studentsub.setdefault(test, {})[type] = val
         studentsub[type] = val + studentsub.get(type, 0)
 
-        testsub = tests.setdefault(subject, {})
-        testsub[test] = 1
+        testsub = tests.setdefault(subject, [])
+        if test not in testsub: testsub.append(test)
 
         del student[item]
 
 # Post-computation
 for subject in subjects:
     count = 0
+    max_marks = max(x[subject]['MARKS'] for x in students)
+    min_marks = min(x[subject]['MARKS'] for x in students)
+    range_marks = max_marks - min_marks
     for student in students:
         if student[subject]['MAX MARKS'] > 0:
             g = grade(student[subject])
@@ -67,11 +86,20 @@ for subject in subjects:
             student[subject]['GRADE'] = g
             count += 1
 
+            pc = dict([(test, student[subject][test]['MARKS'] / student[subject][test]['MAX MARKS']) for test in tests[subject] if student[subject][test]['MAX MARKS'] > 0])
+            pcmin = min(pc.values()) - 0.05
+            pcrange = max(pc.values()) - pcmin + 0.01
             for test in tests[subject]:
                 g = grade(student[subject][test])
                 student[subject][test]['GRADE'] = g
+                if student[subject][test]['MAX MARKS'] > 0:
+                    student[subject][test]['BARHEIGHT'] = (pc[test] - pcmin) / pcrange
+
+        student[subject]['PERCENTILE'] = (student[subject]['MARKS'] - min_marks) / range_marks if range_marks > 0 else 0.5
 
     subjects[subject]['COUNT'] = count
+
+subjectlist = [x for x in subjectlist if subjects[x]['MAX MARKS'] > 0]
 
 loader = template.Loader(os.path.dirname(__file__))
 outfile = re.sub(r'\W+', r'-', title).lower() + '.xhtml'
