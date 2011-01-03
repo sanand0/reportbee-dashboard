@@ -6,11 +6,13 @@
 
 {% set x0 = len(gradelist)*80+100 %}
 
-{% set x1 = 420 %}
-{% set x2 = x1 + len(subjectlist)*25 + 10 %}
+{% set x_totl = 0   %}
+{% set x_name = x_totl + len(subjectlist)*25 + 10 %}
+{% set x_perf = x_name + 200 %}
+{% set x_scor = x_perf + 210 %}
 {% set subw = 120 %}
 
-body { margin: 0 auto 20px auto; width: {{ max((200*len(subjectlist), x2 + len(subjectlist)*subw)) }}px }
+body { margin: 0 auto 20px auto; width: {{ max((200*len(subjectlist), x_scor + len(subjectlist)*subw)) }}px }
 h1 { font-weight: bold; font-size: 400%; font-variant: small-caps; background-color:#035045; color:#fff; height:75px; margin-bottom: 0.5em; }
 h1 img { float:right; }
 hr { page-break-after: always; visibility:hidden; }
@@ -132,51 +134,52 @@ hr { page-break-after: always; visibility:hidden; }
 </svg>
 
 {% set y0 = 50 %}
-<svg id="performance" width="{{ x2 + len(subjectlist)*subw }}" height="{{ len(students)*h + y0 + 10 }}" xmlns="http://www.w3.org/2000/svg">
-<text x="300" y="40" style="text-anchor:middle">Middle</text>
-<text x="195" y="40" style="text-anchor:start">Bottom 25%</text>
-<text x="405" y="40" style="text-anchor:end">Top 25%</text>
+<svg id="performance" width="{{ x_scor + len(subjectlist)*subw }}" height="{{ len(students)*h + y0 + 10 }}" xmlns="http://www.w3.org/2000/svg">
+<text x="{{ x_perf + 100 }}" y="40" style="text-anchor:middle">Middle</text>
+<text x="{{ x_perf -   5 }}" y="40" style="text-anchor:start">Bottom 25%</text>
+<text x="{{ x_perf + 205 }}" y="40" style="text-anchor:end">Top 25%</text>
 {% for j, subject in enumerate(subjectlist) %}
  <g class="heading">
-  <text x="{{ x2 + j*subw + 2}}" y="15" class="name" >{{ subject }}</text>
-  <text x="{{ x2 + j*subw + 12 }}" y="28" style="text-anchor:middle">Total</text>
-  <text x="{{ x2 + j*subw + 36 }}" y="40" style="text-anchor:middle;font-size:8px">Graph</text>
-  <text x="{{ x2 + j*subw + 12 }}" y="40" style="text-anchor:middle">{{ int(max(student[subject]['MAX MARKS'] for student in students)) }}</text>
-  <text x="{{ x1 + j*25 + 20 }}" y="28" style="text-anchor:end">{{ subject[0:2] }}</text>
-  <text x="{{ x1 + j*25 + 20 }}" y="40" style="text-anchor:end">{{ int(max(student[subject]['MAX MARKS'] for student in students)) }}</text>
+  <text x="{{ x_scor + j*subw }}" y="13" class="name" >{{ subject }}</text>
+  <text x="{{ x_scor + j*subw + 12 }}" y="28" style="text-anchor:middle">Total</text>
+  <text x="{{ x_scor + j*subw + 36 }}" y="40" style="text-anchor:middle;font-size:8px">Graph</text>
+  <text x="{{ x_scor + j*subw + 12 }}" y="40" style="text-anchor:middle">{{ int(max(student[subject]['MAX MARKS'] for student in students)) }}</text>
+  <text x="{{ x_totl + j*25 + 20 }}" y="28" style="text-anchor:end">{{ subject[0:2] }}</text>
+  <text x="{{ x_totl + j*25 + 20 }}" y="40" style="text-anchor:end">{{ int(max(student[subject]['MAX MARKS'] for student in students)) }}</text>
   {% for k, test in enumerate(tests[subject]) %}
-   <text x="{{ x2 + j*subw + 50 + 7 + k*16 }}" y="28" style="text-anchor:middle;font-size:8px">{{ test }}</text>
-   <text x="{{ x2 + j*subw + 50 + 7 + k*16 }}" y="40" style="text-anchor:middle;font-size:8px">{{ int(max(student[subject][test]['MAX MARKS'] for student in students)) }}</text>
+   <text x="{{ x_scor + j*subw + 50 + 7 + k*16 }}" y="28" style="text-anchor:middle;font-size:8px">{{ test }}</text>
+   <text x="{{ x_scor + j*subw + 50 + 7 + k*16 }}" y="40" style="text-anchor:middle;font-size:8px">{{ int(max(student[subject][test]['MAX MARKS'] for student in students)) }}</text>
   {% end %}
  </g>
 {% end %}
 {% for i, student in enumerate(students) %}
  {% if not i % 3 %}
-  <rect x="0" y="{{ i*h + y0 - 4}}" width="100%" height="14" style="fill:#ddf" />
+  <!-- rect x="0" y="{{ i*h + y0 - 4}}" width="100%" height="14" style="fill:#ddf" / -->
+  <rect x="0" y="{{ i*h + y0 - 5}}" width="100%" height="1" style="fill:#aaa" />
  {% end %}
  <g>
-  <text x="28" y="{{ i*h + y0 }}" style="dominant-baseline:hanging;text-anchor:end">{{ student['ROLL'] }}</text>
-  <text x="30" y="{{ i*h + y0 }}" style="dominant-baseline:hanging;text-anchor:start">{{ student['NAME'] }}</text>
-  <rect x="195" y="{{ i*h + y0 - 4 }}" width="55" height="14" style="fill:#ccc"/>
-  <rect x="250" y="{{ i*h + y0 - 4 }}" width="50" height="14" style="fill:#ddd"/>
-  <rect x="300" y="{{ i*h + y0 - 4 }}" width="50" height="14" style="fill:#eee"/>
-  <rect x="350" y="{{ i*h + y0 - 4 }}" width="55" height="14" style="fill:#f8f8f8"/>
+  <text x="{{ x_name + 28  }}" y="{{ i*h + y0 }}" style="dominant-baseline:hanging;text-anchor:end">{{ student['ROLL'] }}</text>
+  <text x="{{ x_name + 30  }}" y="{{ i*h + y0 }}" style="dominant-baseline:hanging;text-anchor:start">{{ student['NAME'] }}</text>
+  <rect x="{{ x_perf -  5  }}" y="{{ i*h + y0 - 4 }}" width="55" height="14" style="fill:#ccc"/>
+  <rect x="{{ x_perf + 50  }}" y="{{ i*h + y0 - 4 }}" width="50" height="14" style="fill:#ddd"/>
+  <rect x="{{ x_perf + 100 }}" y="{{ i*h + y0 - 4 }}" width="50" height="14" style="fill:#eee"/>
+  <rect x="{{ x_perf + 150 }}" y="{{ i*h + y0 - 4 }}" width="55" height="14" style="fill:#f8f8f8"/>
   {% for j, subject in enumerate(subjectlist) %}
    {% if student[subject]['MAX MARKS'] > 0 %}
     <!-- circle cx="{{ 200 + student[subject]['PERCENTILE']*200 }}" cy="{{ i*h + y0 + 3 + jitter(student, subject) }}" r="3" class="{{ slugify(subject) }}"/ -->
-    <text x="{{ 200 + student[subject]['PERCENTILE']*200 }}" y="{{ i*h + y0 + 3 + jitter(student, subject) }}" style="dominant-baseline:middle;text-anchor:middle;font-size:7px" class="{{ slugify(subject) }}">{{ subject[0:2] }}</text>
+    <text x="{{ x_perf + student[subject]['PERCENTILE']*200 }}" y="{{ i*h + y0 + 3 + jitter(student, subject) }}" style="dominant-baseline:middle;text-anchor:middle;font-size:7px" class="{{ slugify(subject) }}">{{ subject[0:2] }}</text>
 
-    <rect x="{{ x2 + j*subw }}" y="{{ i*h + y0 - 4 }}" rx="2" ry="2" width="25" height="14" class="{{ student[subject]['GRADE'] }}" />
-    <text x="{{ x2 + j*subw + 12 }}" y="{{ i*h + y0 }}" style="dominant-baseline:hanging;text-anchor:middle;fill:#fff">{{ int(student[subject]['MARKS']) }}</text>
+    <rect x="{{ x_scor + j*subw }}" y="{{ i*h + y0 - 4 }}" rx="2" ry="2" width="25" height="14" class="{{ student[subject]['GRADE'] }}" />
+    <text x="{{ x_scor + j*subw + 12 }}" y="{{ i*h + y0 }}" style="dominant-baseline:hanging;text-anchor:middle;fill:#fff">{{ int(student[subject]['MARKS']) }}</text>
 
-    <rect x="{{ x1 + j*25 }}" y="{{ i*h + y0 - 4 }}" rx="2" ry="2" width="22" height="14" class="{{ student[subject]['GRADE'] }}" />
-    <text x="{{ x1 + j*25 + 20 }}" y="{{ i*h + y0 }}" style="dominant-baseline:hanging;text-anchor:end;fill:#fff">{{ int(student[subject]['MARKS']) }}</text>
+    <rect x="{{ x_totl + j*25 }}" y="{{ i*h + y0 - 4 }}" rx="2" ry="2" width="22" height="14" class="{{ student[subject]['GRADE'] }}" />
+    <text x="{{ x_totl + j*25 + 20 }}" y="{{ i*h + y0 }}" style="dominant-baseline:hanging;text-anchor:end;fill:#fff">{{ int(student[subject]['MARKS']) }}</text>
 
     {% for k, test in enumerate(tests[subject]) %}
      {% if student[subject][test]['MAX MARKS'] > 0 %}
-      <rect x="{{ x2 + j*subw + 33 + k*3 }}" y="{{ i*h + y0 + 8 - 10*student[subject][test]['BARHEIGHT'] }}" width="2" height="{{ 10*student[subject][test]['BARHEIGHT'] }}" class="{{ grade(student[subject][test]) }}"/>
-      <rect x="{{ x2 + j*subw + 50 + k*16 }}" y="{{ i*h + y0 - 4 }}" rx="7" ry="7" width="14" height="14" class="{{ student[subject][test]['GRADE'] }}" />
-      <text x="{{ x2 + j*subw + 50 + 7 + k*16 }}" y="{{ i*h + y0 }}" style="dominant-baseline:hanging;text-anchor:middle;fill:#fff;font-size:8px">{{ int(student[subject][test]['MARKS']) }}</text>
+      <rect x="{{ x_scor + j*subw + 33 + k*3 }}" y="{{ i*h + y0 + 8 - 10*student[subject][test]['BARHEIGHT'] }}" width="2" height="{{ 10*student[subject][test]['BARHEIGHT'] }}"/>
+      <rect x="{{ x_scor + j*subw + 50 + k*16 }}" y="{{ i*h + y0 - 4 }}" rx="7" ry="7" width="14" height="14" class="{{ student[subject][test]['GRADE'] }}" />
+      <text x="{{ x_scor + j*subw + 50 + 7 + k*16 }}" y="{{ i*h + y0 }}" style="dominant-baseline:hanging;text-anchor:middle;fill:#fff;font-size:8px">{{ int(student[subject][test]['MARKS']) }}</text>
      {% end %}
     {% end %}
 
