@@ -51,6 +51,14 @@ def jitter(student, subject):
     return (j-0.5)*8
 
 
+def percentile(scores):
+    total, count, n = {}, {}, -1
+    for i, score in enumerate(sorted(scores)):
+        total[score] = total.get(score, 0) + i
+        count[score] = count.get(score, 0) + 1
+        n += 1
+    return [float(total[score]) / count[score] / n for score in scores]
+
 # Compute student[] parameters
 for student in students:
     percent_total = 0.0
