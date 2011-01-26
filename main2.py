@@ -52,12 +52,20 @@ def jitter(student, subject):
 
 
 def percentile(scores):
-    total, count, n = {}, {}, -1
+    # count[score] has the number of students with a given score
+    # total[score] has the sum of ranks of all students with a given score
+    total, count = {}, {}
     for i, score in enumerate(sorted(scores)):
         total[score] = total.get(score, 0) + i
         count[score] = count.get(score, 0) + 1
-        n += 1
-    return [float(total[score]) / count[score] / n for score in scores]
+
+    # Average rank = total[score] / count[score]
+    rank = [float(total[score]) / count[score] for score in scores]
+
+    # Scale it so that the lowest score always gets 0, and highest gets 1
+    min_rank = min(rank)
+    range_rank = max(rank) - min_rank
+    return [(x - min_rank) / range_rank for x in rank]
 
 # Compute student[] parameters
 for student in students:
