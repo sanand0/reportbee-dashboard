@@ -1,5 +1,10 @@
 #!/usr/bin/python
 
+# This is used to generate student report visualisations shown at the
+# [Reportbee blog](http://blog.reportbee.com/visualising-student-performance-2)
+#
+# The data must be in the format shown here:
+
 '''
 Usage: main2.py marks-file.csv [sort]
 
@@ -9,22 +14,40 @@ A-1,AAKASH DILIP KUMAR MEHTA,37,50,27,50,46,80,30,50,32,50,16,80,44,50,40,50,53,
 '''
 
 import sys, csv, os.path, re, operator, random
+
+# Tornado templates are used to generate the output
 from tornado import template
 
+# If no command line arguments are given, print the docstring as help
 if len(sys.argv) < 2:
     print __doc__
     sys.exit(0)
 
 # Load the data
+# -------------
+
+# Load the data from the first command line argument
 infile = open(sys.argv[1])
+
+# The title is the filename, with spaces replaced by hyphens
 title  = os.path.splitext(os.path.basename(sys.argv[1]))[0].replace('-', ' ')
+
+# Read the file as a CSV file, with the first column as headers
 reader = csv.DictReader(infile)
 students = list(reader)
-fieldlist = reader.fieldnames[2:] # Ignore the first two. These should be "Name" and "Roll"
+
+# Get the fieldnames, ignoring the first two ("Roll" and "Name")
+fieldlist = reader.fieldnames[2:]
+
 subjectlist = []
 subjects = {}
 tests = {}
 
+# Define useful functions
+# -----------------------
+
+# The `grade()` function returns the grade given a percentage
+# See the last page of [CBSE's Certificate](http://www.cbse.nic.in/cce/CCE%20Certificate-2009-11-A3%20size%20(Coloured)-13-10-2010.pdf) (PDF)
 gradelist =             'A1 A2 B1 B2 C1 C2 D  E1 E2'.split()
 grades = zip(gradelist, [90,80,70,60,50,40,32,20,-0.0001])
 def grade(item):
@@ -34,39 +57,59 @@ def grade(item):
             if mark > floor: return grade
     else: return ''
 
+# `slugify` is a utility used by the template to convert subject names
+# to HTML-safe class names
 def slugify(s): return re.sub(r'[^A-Za-z0-9_]+', '-', s)
 
+# We plot student's as circles along a horizontal line.
+# Sometimes, these circles overlap if the marks are close enough.
+# We can overcome this by moving them a bit, vertically.
+# `jitter` returns a number indicating how much to move vertically
 def jitter(student, subject):
+    # Get the percentage
     pc = student[subject]['PERCENTILE']
+
+    # Collect all subjects with a difference of within 5% from the subject
     mindiffs = [subject]
     for sub in subjectlist:
         if sub != subject and student[sub]['MAX MARKS'] > 0:
             if abs(student[sub]['PERCENTILE'] - pc) < 0.05:
                 mindiffs.append(sub)
+
+    # Sort the subjects alphabetically (to get a stable order).
+    # Just use the subject's position in the list as the jitter factor.
+    # This isn't the best jitter possible. Ideally, closer items would get
+    # a bigger jitter, but getting a stable algorithm (i.e. one that returns
+    # the same result for a subject irrespective of neighbours) need thought.
     mindiffs.sort()
     j = 0.5
     if len(mindiffs) > 1:
         j = float(mindiffs.index(subject)) / (len(mindiffs)-1)
-    return (j-0.5)*8
+    return (j-0.5)
 
-
+# `percentile` takes an array of scores and returns the percentiles of each.
+# We use [percentile](http://en.wikipedia.org/wiki/Percentile#Nearest_rank) =
+# [Fractional rank](http://en.wikipedia.org/wiki/Ranking#Fractional_ranking_.28.221_2.5_2.5_4.22_ranking.29)
+# divided by number of students.
 def percentile(scores):
-    # count[score] has the number of students with a given score
-    # total[score] has the sum of ranks of all students with a given score
-    total, count = {}, {}
+    total = {}  # sum of ranks of all students with a given score
+    count = {}  # number of students with a given score
     for i, score in enumerate(sorted(scores)):
         total[score] = total.get(score, 0) + i
         count[score] = count.get(score, 0) + 1
 
-    # Average rank = total[score] / count[score]
-    rank = [float(total[score]) / count[score] for score in scores]
+    fractional_ranks = [float(total[score]) / count[score] for score in scores]
 
-    # Scale it so that the lowest score always gets 0, and highest gets 1
-    min_rank = min(rank)
-    range_rank = max(rank) - min_rank
-    return [(x - min_rank) / range_rank for x in rank]
+    # We make one modification to this, however.
+    # We scale it so that the lowest score always gets 0, and highest gets 1
+    min_rank = min(fractional_ranks)
+    range_rank = max(fractional_ranks) - min_rank
+    return [(x - min_rank) / range_rank for x in fractional_ranks]
 
-# Compute student[] parameters
+# Calculate statistics
+# --------------------
+
+# Compute student properties. TODO: documentation
 for student in students:
     percent_total = 0.0
     for item in fieldlist:
@@ -88,7 +131,7 @@ for student in students:
 
         del student[item]
 
-# Post-computation
+# Post-computation. TODO: documentation
 for subject in subjects:
     count = 0
     max_marks = max(x[subject]['MARKS'] for x in students)
@@ -115,6 +158,9 @@ for subject in subjects:
     subjects[subject]['COUNT'] = count
 
 subjectlist = [x for x in subjectlist if subjects[x]['MAX MARKS'] > 0]
+
+# Generate the template
+# ---------------------
 
 loader = template.Loader(os.path.dirname(__file__))
 outfile = re.sub(r'\W+', r'-', title).lower() + '.xhtml'

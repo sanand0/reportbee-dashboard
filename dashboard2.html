@@ -20,7 +20,6 @@ hr { page-break-after: always; visibility:hidden; }
 .total { text-anchor: end; fill: #000000; }
 .grade { fill: #ffffff; }
 .heading .name { font-weight: bold; font-size: 14px; }
-.heading .marks { fill: #000000; }
 #legend { display:block; }
 
 .A1 { fill: #8064a2; }
@@ -166,8 +165,8 @@ hr { page-break-after: always; visibility:hidden; }
   <rect x="{{ x_perf + 150 }}" y="{{ i*h + y0 - 4 }}" width="55" height="14" style="fill:#f8f8f8"/>
   {% for j, subject in enumerate(subjectlist) %}
    {% if student[subject]['MAX MARKS'] > 0 %}
-    <!-- circle cx="{{ 200 + student[subject]['PERCENTILE']*200 }}" cy="{{ i*h + y0 + 3 + jitter(student, subject) }}" r="3" class="{{ slugify(subject) }}"/ -->
-    <text x="{{ x_perf + student[subject]['PERCENTILE']*200 }}" y="{{ i*h + y0 + 3 + jitter(student, subject) }}" style="dominant-baseline:middle;text-anchor:middle;font-size:7px" class="{{ slugify(subject) }}">{{ subject[0:2] }}</text>
+    <!-- circle cx="{{ 200 + student[subject]['PERCENTILE']*200 }}" cy="{{ i*h + y0 + 3 + 8*jitter(student, subject) }}" r="3" class="{{ slugify(subject) }}"/ -->
+    <text x="{{ x_perf + student[subject]['PERCENTILE']*200 }}" y="{{ i*h + y0 + 3 + 8*jitter(student, subject) }}" style="dominant-baseline:middle;text-anchor:middle;font-size:7px" class="{{ slugify(subject) }}">{{ subject[0:2] }}</text>
 
     <rect x="{{ x_scor + j*subw }}" y="{{ i*h + y0 - 4 }}" rx="2" ry="2" width="25" height="14" class="{{ student[subject]['GRADE'] }}" />
     <text x="{{ x_scor + j*subw + 12 }}" y="{{ i*h + y0 }}" style="dominant-baseline:hanging;text-anchor:middle;fill:#fff">{{ int(student[subject]['MARKS']) }}</text>
