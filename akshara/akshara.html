@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"><head><title>{{ title }}</title>
+<style>
+/* YUI3 CSS reset */html{color:#000;background:#FFF;}body,div,dl,dt,dd,ul,ol,li,h1,h2,h3,h4,h5,h6,pre,code,form,fieldset,legend,input,textarea,p,blockquote,th,td{margin:0;padding:0;}table{border-collapse:collapse;border-spacing:0;}fieldset,img{border:0;}address,caption,cite,code,dfn,em,strong,th,var{font-style:normal;font-weight:normal;}li{list-style:none;}caption,th{text-align:left;}h1,h2,h3,h4,h5,h6{font-size:100%;font-weight:normal;}q:before,q:after{content:'';}abbr,acronym{border:0;font-variant:normal;}sup{vertical-align:text-top;}sub{vertical-align:text-bottom;}input,textarea,select{font-family:inherit;font-size:inherit;font-weight:inherit;}input,textarea,select{*font-size:100%;}legend{color:#000;}
+/* YUI3 CSS fonts */body{font:14px/1.5 "Gill Sans","Gill Sans MT",sans-serif;*font-size:medium;*font:x-medium;}select,input,button,textarea{font-size:99%;}table{font-size:inherit;font:100%;}pre,code,kbd,samp,tt{font-family:monospace;*font-size:108%;line-height:100%;}
+/* YUI3 CSS grids */.yui3-g{letter-spacing:-0.31em;*letter-spacing:normal;word-spacing:-0.43em;}.yui3-u,.yui3-u-1,.yui3-u-1-2,.yui3-u-1-3,.yui3-u-2-3,.yui3-u-1-4,.yui3-u-3-4,.yui3-u-1-5,.yui3-u-2-5,.yui3-u-3-5,.yui3-u-4-5,.yui3-u-1-6,.yui3-u-5-6,.yui3-u-1-8,.yui3-u-3-8,.yui3-u-5-8,.yui3-u-7-8,.yui3-u-1-12,.yui3-u-5-12,.yui3-u-7-12,.yui3-u-11-12,.yui3-u-1-24,.yui3-u-5-24,.yui3-u-7-24,.yui3-u-11-24,.yui3-u-13-24,.yui3-u-17-24,.yui3-u-19-24,.yui3-u-23-24{display:inline-block;zoom:1;*display:inline;letter-spacing:normal;word-spacing:normal;vertical-align:top;}.yui3-u-1{display:block;}.yui3-u-1-2{width:50%;}.yui3-u-1-3{width:33.33333%;}.yui3-u-2-3{width:66.66666%;}.yui3-u-1-4{width:25%;}.yui3-u-3-4{width:75%;}.yui3-u-1-5{width:20%;}.yui3-u-2-5{width:40%;}.yui3-u-3-5{width:60%;}.yui3-u-4-5{width:80%;}.yui3-u-1-6{width:16.656%;}.yui3-u-5-6{width:83.33%;}.yui3-u-1-8{width:12.5%;}.yui3-u-3-8{width:37.5%;}.yui3-u-5-8{width:62.5%;}.yui3-u-7-8{width:87.5%;}.yui3-u-1-12{width:8.3333%;}.yui3-u-5-12{width:41.6666%;}.yui3-u-7-12{width:58.3333%;}.yui3-u-11-12{width:91.6666%;}.yui3-u-1-24{width:4.1666%;}.yui3-u-5-24{width:20.8333%;}.yui3-u-7-24{width:29.1666%;}.yui3-u-11-24{width:45.8333%;}.yui3-u-13-24{width:54.1666%;}.yui3-u-17-24{width:70.8333%;}.yui3-u-19-24{width:79.1666%;}.yui3-u-23-24{width:95.8333%;}
+
+body { margin: 20px auto 20px auto; width: 1060px; -moz-column-width: 520px; -webkit-column-width: 520px; }
+h1 { margin-bottom: 0.5em; }
+hr { page-break-after: always; visibility:hidden; }
+rect.O { fill: #BF2545; } text.O { fill: #FFFFFF; }
+rect.L { fill: #D6574E; } text.L { fill: #FFFFFF; }
+rect.W { fill: #D2D66D; } text.W { fill: #000000; }
+rect.S { fill: #718A57; } text.S { fill: #FFFFFF; }
+rect.P { fill: #37583C; } text.P { fill: #FFFFFF; }
+strong { font-weight: bold; color: #37583C; }
+li { list-style: disc; margin-left: 1em; }
+.dfn { margin-top: 1em; }
+.conclusion { font-family: Georgia; font-style: italic; }
+
+svg { display: block; }
+</style>
+</head><body>
+
+<h1><img src="header.png" alt="Karnataka Learning Partnerships" width="520" /></h1>
+
+<p><a href="http://klp.org.in/">Karnataka Learning Partnership</a>'s reading programme assesses students on reading ability:</p>
+<svg width="520" height="20" xmlns="http://www.w3.org/2000/svg">
+ <rect x=  "0" y="0" width="100" height="20" class="O" /><text class="O" x= "50" y="10" style="dominant-baseline:central;text-anchor:middle">O - cannot read</text>
+ <rect x="105" y="0" width="100" height="20" class="L" /><text class="L" x="155" y="10" style="dominant-baseline:central;text-anchor:middle">L - letters</text>
+ <rect x="210" y="0" width="100" height="20" class="W" /><text class="W" x="260" y="10" style="dominant-baseline:central;text-anchor:middle">W - words</text>
+ <rect x="315" y="0" width="100" height="20" class="S" /><text class="S" x="365" y="10" style="dominant-baseline:central;text-anchor:middle">S - sentences</text>
+ <rect x="420" y="0" width="100" height="20" class="P" /><text class="P" x="470" y="10" style="dominant-baseline:central;text-anchor:middle">P - paragraphs</text>
+</svg>
+
+<p class="dfn">Students' reading ability before and after the <a href="http://klp.org.in/text/reading">2009 reading programme</a> are shown below.</p>
+<p class="dfn"><strong>Reading level improvement</strong>: The length shows how many levels students in the group moved up by. An improvement of 1 the student moved up 1 level, e.g. O &#x2192; L, L &#x2192; W.) The thickness of the column is based on the number of students.</p>
+<p class="dfn"><strong>Pre- and Post- reading levels</strong>: The mix of students at each level is shown. The width of each level is based on the number of students at that reading level.</p>
+<p class="dfn conclusion"><strong>Key results</strong>: The average improvement is 1.74 levels, and is</p>
+<ul class="conclusion">
+ <li>slightly higher among girls than boys (but not significantly)</li>
+ <li>consistent across classes</li>
+ <li>lower for English medium schools (but not enough evidence)</li>
+ <li>worked significantly better at Magadi than anywhere else.</li>
+</ul>
+<br/>
+
+{% set height = 28.0 %}
+{% set improvement_list = [improvement[field][value] for field in fields for value in improvement[field]] %}
+{% set min_improvement   = min(improvement_list) %}
+{% set improvement_range = max(improvement_list) - min_improvement %}
+{% set ave_improvement   = sum(improvement_list) / len(improvement_list) %}
+{% for field in fields %}
+ <svg width="520" height="{{ height * len(summary[field]) + 20 }}" xmlns="http://www.w3.org/2000/svg">
+  <line x1="0" x2="520" y1="1" y2="1" stroke-width="2" stroke="#888" />
+
+  <text x="0" y="2" style="font-size:16px;font-weight:bold;dominant-baseline:hanging">{{ field }}</text>
+
+  <text x="250" y="15" style="font-size:10px;dominant-baseline:bottom;text-anchor:end">Students</text>
+  <text x="260" y="15" style="font-size:10px;dominant-baseline:bottom;text-anchor:start">Reading level improvement</text>
+  <text x="520" y="15" style="font-size:10px;dominant-baseline:bottom;text-anchor:end">Pre- and Post- reading levels</text>
+
+  {% set count_students = dict((v, sum(pre[field][v].values())) for v in pre[field].keys()) %}
+  {% set thicknesses = dict(((k, v) for k,v in count_students.iteritems())) %}
+  {% set total_students = sum(count_students.values()) %}
+
+  {% for i, value in enumerate(sorted(summary[field].keys(), key=lambda x: improvement[field][x], reverse=True)) %}
+   {% set y = i*height + height/2 + 20 %}
+   {% set x = 0 %}
+
+   {% comment -- name of the category %}
+   <text x="{{ x + 200 }}" y="{{ y }}" style="dominant-baseline:central;text-anchor:end">{{ value }}</text>
+   {% set x = x + 200 %}
+
+   {% comment -- number of students %}
+   <text x="{{ x + 47 }}" y="{{ y }}" style="dominant-baseline:central;text-anchor:end">{{ locale.format('%d', count_students[value], True) }}</text>
+   {% set x = x + 50 %}
+
+   {% comment -- average improvement %}
+   {% set thickness = float(thicknesses[value]) / max(thicknesses.values()) * (height/2) + 1 %}
+   <text x="{{ x + 37 }}" y="{{ y }}" style="dominant-baseline:central;text-anchor:end">{{ '%0.2f' % improvement[field][value] }}</text>
+   {% set x = x + 40 %}
+   <rect x="{{ x }}" y="{{ y - thickness/2 }}" width="{{ 10 + (improvement[field][value] - min_improvement) / improvement_range * 90 }}" height="{{ thickness }}"/>
+   <rect x="{{ x + 9.5 + (ave_improvement - min_improvement) / improvement_range * 90 }}" y="{{ y - 4 }}" width="1" height="8" style="fill:#7f7f7f"/>
+   {% set x = x + 100 %}
+
+   {% comment -- break-up of pre and post %}
+
+   {% if i == 0 %}
+    <text x="{{ x + 27 }}" y="{{ y - 1 - height/3 + height/6 }}" style="font-size:10px;dominant-baseline:central;text-anchor:end">Pre</text>
+    <text x="{{ x + 27 }}" y="{{ y + 1            + height/6 }}" style="font-size:10px;dominant-baseline:central;text-anchor:end">Post</text>
+   {% end %}
+
+   {% set x = x + 30 %}
+   {% set x_pre = x %}
+   {% set x_post = x %}
+   {% for level in sorted(levels.keys()) %}
+     {% set w_pre  = float(pre [field][value][level]) / count_students[value] * 100 %}
+     {% set w_post = float(post[field][value][level]) / count_students[value] * 100 %}
+
+     <rect class="{{ levels[level] }}" x="{{ x_pre  }}" y="{{ y - 1 - height/3 }}" width="{{ w_pre  }}" height="{{ height/3 }}" />
+     <rect class="{{ levels[level] }}" x="{{ x_post }}" y="{{ y + 1            }}" width="{{ w_post }}" height="{{ height/3 }}" />
+
+     {% if w_pre  > 3 %}<text class="{{ levels[level] }}" x="{{ x_pre  + w_pre /2 }}" y="{{ y - 1 - height/3 + height/6 }}" style="font-size:9px;dominant-baseline:central;text-anchor:middle">{{ levels[level] }}</text>{% end %}
+     {% if w_post > 3 %}<text class="{{ levels[level] }}" x="{{ x_post + w_post/2 }}" y="{{ y + 1            + height/6 }}" style="font-size:9px;dominant-baseline:central;text-anchor:middle">{{ levels[level] }}</text>{% end %}
+
+     {% set x_pre  = x_pre  + w_pre  %}
+     {% set x_post = x_post + w_post %}
+   {% end %}
+   {% set x = x + 100 %}
+
+  {% end %}
+ </svg>
+{% end %}
+
+
+</body></html>
