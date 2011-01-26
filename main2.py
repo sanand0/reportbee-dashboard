@@ -18,7 +18,6 @@ if len(sys.argv) < 2:
 # Load the data
 infile = open(sys.argv[1])
 title  = os.path.splitext(os.path.basename(sys.argv[1]))[0].replace('-', ' ')
-exit
 reader = csv.DictReader(infile)
 students = list(reader)
 fieldlist = reader.fieldnames[2:] # Ignore the first two. These should be "Name" and "Roll"
