@@ -43,9 +43,9 @@ hr { page-break-after: always; visibility:hidden; }
 <h1>{{ title }} <img src="rb-logo-bg.png" height="75" alt="(ReportBee)" /> </h1>
 <svg id="legend" width="1200" height="30" xmlns="http://www.w3.org/2000/svg">
 <text x="4" y="10" style="text-anchor:start;dominant-baseline:middle">Grade Legend:</text>
-{% for i, curgrade in enumerate(gradelist) %}
+{% for i, curgrade in enumerate(reversed(gradelist)) %}
  <rect x="{{i*80+ 90}}" y="0" width="78" height="16" class="{{ curgrade }}"/>
- <text x="{{i*80+129}}" y="10" style="text-anchor:middle;dominant-baseline:middle" class="name grade">{{ curgrade }}: {{ int(grades[i][1]) }} - {{ int(grades[i-1][1] if i > 0 else 100) }}%</text>
+ <text x="{{i*80+129}}" y="10" style="text-anchor:middle;dominant-baseline:middle" class="name grade">{{ curgrade }}: {{ int(grades[len(gradelist)-i-1][1]) }} - {{ int(grades[len(gradelist)-i-2][1] if i < len(gradelist)-1 else 100) }}%</text>
 {% end %}
 <rect x="{{ x0 + 0 }}" y= "5" width="2" height="10" class="A1"/>
 <rect x="{{ x0 + 3 }}" y="10" width="2" height= "5" class="C1"/>
@@ -102,7 +102,7 @@ hr { page-break-after: always; visibility:hidden; }
 
  <g class="histogram">
   {% set maxcount = max(subjects[subject].get(g,0) for g in gradelist) %}
-  {% for i, curgrade in enumerate(gradelist) %}
+  {% for i, curgrade in enumerate(reversed(gradelist)) %}
    {% set pc = float(subjects[subject].get(curgrade,0)) / maxcount %}
    <rect x="{{ 200*si + i*16 + 28 }}" y="{{ymax + 10 + 50*(1-pc)}}" width="15" height="{{ 50*pc }}" class="{{ curgrade }}" />
    <rect x="{{ 200*si + i*16 + 28 }}" y="{{ymax + 10 + 53}}" width="15" height="12" class="{{ curgrade }}" />
@@ -121,9 +121,9 @@ hr { page-break-after: always; visibility:hidden; }
 
 <svg id="legend" width="1200" height="30" xmlns="http://www.w3.org/2000/svg">
 <text x="4" y="10" style="text-anchor:start;dominant-baseline:middle">Grade Legend:</text>
-{% for i, curgrade in enumerate(gradelist) %}
+{% for i, curgrade in enumerate(reversed(gradelist)) %}
  <rect x="{{i*80+ 90}}" y="0" width="78" height="16" class="{{ curgrade }}"/>
- <text x="{{i*80+129}}" y="10" style="text-anchor:middle;dominant-baseline:middle" class="name grade">{{ curgrade }}: {{ int(grades[i][1]) }} - {{ int(grades[i-1][1] if i > 0 else 100) }}%</text>
+ <text x="{{i*80+129}}" y="10" style="text-anchor:middle;dominant-baseline:middle" class="name grade">{{ curgrade }}: {{ int(grades[len(gradelist)-i-1][1]) }} - {{ int(grades[len(gradelist)-i-2][1] if i < len(gradelist)-1 else 100) }}%</text>
 {% end %}
 {% set x0 = len(gradelist)*80+100 %}
 <rect x="{{ x0 + 0 }}" y= "5" width="2" height="10"/>
@@ -166,7 +166,7 @@ hr { page-break-after: always; visibility:hidden; }
   {% for j, subject in enumerate(subjectlist) %}
    {% if student[subject]['MAX MARKS'] > 0 %}
     <!-- circle cx="{{ 200 + student[subject]['PERCENTILE']*200 }}" cy="{{ i*h + y0 + 3 + 8*jitter(student, subject) }}" r="3" class="{{ slugify(subject) }}"/ -->
-    <text x="{{ x_perf + student[subject]['PERCENTILE']*200 }}" y="{{ i*h + y0 + 3 + 8*jitter(student, subject) }}" style="dominant-baseline:middle;text-anchor:middle;font-size:7px" class="{{ slugify(subject) }}">{{ subject[0:2] }}</text>
+    <text x="{{ x_perf + student[subject]['PERCENTILE']*200 }}" y="{{ i*h + y0 + 3 + 8*jitter(student, subject) }}" style="dominant-baseline:middle;text-anchor:middle;font-size:8px" class="{{ slugify(subject) }}">{{ subject[0:2] }}</text>
 
     <rect x="{{ x_scor + j*subw }}" y="{{ i*h + y0 - 4 }}" rx="2" ry="2" width="25" height="14" class="{{ student[subject]['GRADE'] }}" />
     <text x="{{ x_scor + j*subw + 12 }}" y="{{ i*h + y0 }}" style="dominant-baseline:hanging;text-anchor:middle;fill:#fff">{{ int(student[subject]['MARKS']) }}</text>
