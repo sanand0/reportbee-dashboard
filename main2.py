@@ -41,6 +41,7 @@ fieldlist = reader.fieldnames[2:]
 
 subjectlist = []
 subjects = {}
+sections = {}
 tests = {}
 
 # Define useful functions
@@ -144,6 +145,12 @@ for subject in subjects:
             student[subject]['GRADE'] = g
             count += 1
 
+            section = student['ROLL'][0]
+            sections.setdefault(section, {}).setdefault(subject, {})
+            sections[section][subject][g] = sections[section][subject].get(g, 0) + 1
+            sections[section][subject]['MARKS'] = sections[section][subject].get('MARKS', 0) + student[subject]['MARKS']
+            sections[section][subject]['MAX MARKS'] = sections[section][subject].get('MAX MARKS', 0) + student[subject]['MAX MARKS']
+
             pc = dict([(test, student[subject][test]['MARKS'] / student[subject][test]['MAX MARKS']) for test in tests[subject] if student[subject][test]['MAX MARKS'] > 0])
             pcmin = min(pc.values()) - 0.05
             pcrange = max(pc.values()) - pcmin + 0.01
@@ -164,4 +171,8 @@ subjectlist = [x for x in subjectlist if subjects[x]['MAX MARKS'] > 0]
 
 loader = template.Loader(os.path.dirname(__file__))
 outfile = re.sub(r'\W+', r'-', title).lower() + '.xhtml'
-open(outfile, 'w').write(loader.load("dashboard2.html").generate(**globals()))
+
+# If we have multiple sections, generate using a multi-section template.
+# Otherwise, just use the regular single-section template
+tmpl = len(sections) > 1 and 'multisection.html' or 'dashboard2.html'
+open(outfile, 'w').write(loader.load(tmpl).generate(**globals()))

@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"><head><title>{{ title }}</title>
+<style>
+/* YUI3 CSS reset */html{color:#000;background:#FFF;}body,div,dl,dt,dd,ul,ol,li,h1,h2,h3,h4,h5,h6,pre,code,form,fieldset,legend,input,textarea,p,blockquote,th,td{margin:0;padding:0;}table{border-collapse:collapse;border-spacing:0;}fieldset,img{border:0;}address,caption,cite,code,dfn,em,strong,th,var{font-style:normal;font-weight:normal;}li{list-style:none;}caption,th{text-align:left;}h1,h2,h3,h4,h5,h6{font-size:100%;font-weight:normal;}q:before,q:after{content:'';}abbr,acronym{border:0;font-variant:normal;}sup{vertical-align:text-top;}sub{vertical-align:text-bottom;}input,textarea,select{font-family:inherit;font-size:inherit;font-weight:inherit;}input,textarea,select{*font-size:100%;}legend{color:#000;}
+/* YUI3 CSS fonts */body{font:10px/1.5 sans-serif;*font-size:medium;*font:x-medium;}select,input,button,textarea{font-size:99%;}table{font-size:inherit;font:100%;}pre,code,kbd,samp,tt{font-family:monospace;*font-size:108%;line-height:100%;}
+
+{% set x0 = len(gradelist)*80+100 %}
+{% set x1=40 %}                         {% comment left margin, setting aside space for sections %}
+
+{% set x_totl = 0   %}
+{% set x_name = x_totl + len(subjectlist)*25 + 10 %}
+{% set x_perf = x_name + 200 %}
+{% set x_scor = x_perf + 210 %}
+{% set subw = 120 %}
+
+body { margin: 0 auto 20px auto; width: {{ max((x1 + 200*len(subjectlist), x_scor + len(subjectlist)*subw)) }}px }
+h1 { font-weight: bold; font-size: 400%; font-variant: small-caps; background-color:#035045; color:#fff; height:75px; margin-bottom: 0.5em; }
+h1 img { float:right; }
+hr { page-break-after: always; visibility:hidden; }
+.marks { text-anchor: middle; fill: #ffffff; font-size: 8px; }
+.total { text-anchor: end; fill: #000000; }
+.grade { fill: #ffffff; }
+.heading .name { font-weight: bold; font-size: 14px; }
+.section { font-weight: bold; font-size: 32px; text-anchor: end; }
+#legend { display:block; }
+
+.A1 { fill: #8064a2; }
+.A2 { fill: #4f81bd; }
+.B1 { fill: #9bbb59; }
+.B2 { fill: #9cb084; }
+.C1 { fill: #ceb966; }
+.C2 { fill: #f79646; }
+.D  { fill: #c0504d; }
+.E1 { fill: #9f3b38; }
+.E2 { fill: #772c2a; }
+
+.English        { fill: #c0504d; }
+.Mathematics    { fill: #8064a2;}
+.Social-Science { fill: #4bacc6;}
+.Science        { fill: #f79646;}
+.Comp-Science   { fill: #ceb966;}
+</style>
+</head><body>
+
+<h1>{{ title }} <img src="rb-logo-bg.png" height="75" alt="(ReportBee)" /> </h1>
+<svg id="legend" width="1200" height="30" xmlns="http://www.w3.org/2000/svg">
+<text x="4" y="10" style="text-anchor:start;dominant-baseline:middle">Grade Legend:</text>
+{% for i, curgrade in enumerate(reversed(gradelist)) %}
+ <rect x="{{i*80+ 90}}" y="0" width="78" height="16" class="{{ curgrade }}"/>
+ <text x="{{i*80+129}}" y="10" style="text-anchor:middle;dominant-baseline:middle" class="name grade">{{ curgrade }}: {{ int(grades[len(gradelist)-i-1][1]) }} - {{ int(grades[len(gradelist)-i-2][1] if i < len(gradelist)-1 else 100) }}%</text>
+{% end %}
+<rect x="{{ x0 + 0 }}" y= "5" width="2" height="10" class="A1"/>
+<rect x="{{ x0 + 3 }}" y="10" width="2" height= "5" class="C1"/>
+<rect x="{{ x0 + 6 }}" y= "7" width="2" height= "8" class="B1"/>
+<text x="{{ x0 + 15}}" y="15">Performance in FA1, FA2, SA1. Colours based on grades for each exam.</text>
+</svg>
+
+{% set h=16 %}                              {% comment height of student rows%}
+{% set h2=85 %}                             {% comment height of the histograms %}
+{% set y0=h*2 %}                            {% comment top margin for marks, setting aside space for subject titles %}
+{% set y1=y0 + h*28 %}                      {% comment top margin for overall histogram %}
+{% set y2=y1 + h2 + 50 %}                   {% comment top margin for section histograms %}
+{% set y3=y2 + h2*len(sections) + 50 %}     {% comment top margin for section comparison bar charts %}
+
+<svg width="{{ x1 + 200*len(subjectlist) }}" height="{{ y3 + 120 }}" xmlns="http://www.w3.org/2000/svg">
+{% for si, subject in enumerate(subjectlist) %}
+ <g class="heading">
+  <text x="{{ x1 + 200*si + 26 }}" y="16" class="marks total">{{ int(max(student[subject]['MAX MARKS'] for student in students)) }}</text>
+  <text x="{{ x1 + 200*si + 28 }}" y="16" class="name">{{ subject }}</text>
+ </g>
+ <g class="data">
+ {% comment show top students %}
+ {% set y = y0 %}
+ {% if si == 0 %}
+  <g transform="rotate(-90, {{ x1 - 10 }}, {{ y }})">
+   <text x="{{ x1 - 10 }}" y="{{ y }}" style="text-anchor:end;dominant-baseline:bottom;font-size:20px">Top scorers</text>
+  </g>
+ {% end %}
+
+ {% set pastgrade = '' %}
+ {% set top_students = sorted([x for x in students if x[subject]['MAX MARKS'] > 0], key=lambda x:x[subject]['MARKS'],reverse=True) %}
+ {% for i, student in enumerate(top_students[0:10]) %}
+  {% if student[subject]['MAX MARKS'] > 0 %}
+   {% set curgrade = student[subject]['GRADE'] %}
+   {% while curgrade != pastgrade %}
+    {% set gradeindex = gradelist.index(pastgrade) if pastgrade in gradelist else -1 %}
+    {% set pastgrade = gradelist[1 + gradeindex] if gradeindex < len(gradelist) - 1 else curgrade %}
+    <rect x="{{ x1 + 200*si +   0 }}" y="{{ y-12 }}" width="197" height="14" class="{{ pastgrade }}"/>
+    <text x="{{ x1 + 200*si +  28 }}" y="{{ y }}" class="name grade">{{ pastgrade }}</text>
+    <text x="{{ x1 + 200*si + 195 }}" y="{{ y }}" class="name grade" style="text-anchor:end">{{ subjects[subject].get(pastgrade, 0) }} / {{ subjects[subject]['COUNT'] }}</text>
+    {% set y = y + h %}
+   {% end %}
+
+   {% for j, test in enumerate(tests[subject]) %}
+    {% if student[subject][test]['MAX MARKS'] > 0 %}
+     <rect x="{{ x1 + 200*si + j*3 }}" y="{{ y-10*student[subject][test]['BARHEIGHT'] }}" width="2" height="{{ 10*student[subject][test]['BARHEIGHT'] }}" class="{{ grade(student[subject][test]) }}"/>
+    {% end %}
+   {% end %}
+
+   <text x="{{ x1 + 200*si + 26 }}" y="{{ y }}" class="marks total">{{ int(student[subject]['MARKS']) }}</text>
+   <text x="{{ x1 + 200*si + 28 }}" y="{{ y }}" class="name">{{ student['NAME'] }}</text>
+   {% set y = y + h %}
+  {% end %}
+ {% end %}
+
+ {% comment show bottom students %}
+ {% set y = y0 + h*13 %}
+ {% if si == 0 %}
+  <g transform="rotate(-90, {{ x1 - 10 }}, {{ y }})">
+   <text x="{{ x1 - 10 }}" y="{{ y }}" style="text-anchor:end;dominant-baseline:bottom;font-size:20px">Bottom scorers</text>
+  </g>
+ {% end %}
+ {% set student_index = max(len(top_students) - 10, 10) %}
+ {% for i, student in enumerate(top_students[student_index:len(top_students)]) %}
+  {% if student[subject]['MAX MARKS'] > 0 %}
+   {% set curgrade = student[subject]['GRADE'] %}
+   {% if i == 0 %}{% set pastgrade = gradelist[gradelist.index(curgrade) - 1] %}{% end %}
+   {% while curgrade != pastgrade %}
+    {% set gradeindex = gradelist.index(pastgrade) if pastgrade in gradelist else -1 %}
+    {% set pastgrade = gradelist[1 + gradeindex] if gradeindex < len(gradelist) - 1 else curgrade %}
+    <rect x="{{ x1 + 200*si +   0 }}" y="{{ y-12 }}" width="197" height="14" class="{{ pastgrade }}"/>
+    <text x="{{ x1 + 200*si +  28 }}" y="{{ y }}" class="name grade">{{ pastgrade }}</text>
+    <text x="{{ x1 + 200*si + 195 }}" y="{{ y }}" class="name grade" style="text-anchor:end">{{ subjects[subject].get(pastgrade, 0) }} / {{ subjects[subject]['COUNT'] }}</text>
+    {% set y = y + h %}
+   {% end %}
+
+   {% for j, test in enumerate(tests[subject]) %}
+    {% if student[subject][test]['MAX MARKS'] > 0 %}
+     <rect x="{{ x1 + 200*si + j*3 }}" y="{{ y-10*student[subject][test]['BARHEIGHT'] }}" width="2" height="{{ 10*student[subject][test]['BARHEIGHT'] }}" class="{{ grade(student[subject][test]) }}"/>
+    {% end %}
+   {% end %}
+
+   <text x="{{ x1 + 200*si + 26 }}" y="{{ y }}" class="marks total">{{ int(student[subject]['MARKS']) }}</text>
+   <text x="{{ x1 + 200*si + 28 }}" y="{{ y }}" class="name">{{ student['NAME'] }}</text>
+   {% set y = y + h %}
+  {% end %}
+ {% end %}
+ </g>
+
+ <g class="overall histogram">
+  {% if si == 0 %}
+   <text x="{{ x1 }}" y="{{ y1 + 50 }}" class="section" style="font-size:18px">All</text>
+   <text x="{{ x1 }}" y="{{ y1 + 52 }}" class="section" style="font-size:8px;dominant-baseline:hanging">sections</text>
+  {% end %}
+  <text x="{{ x1 + 200*si + 20 }}" y="{{y1 + 10 + 55}}" style="text-anchor:end;dominant-baseline:hanging">Total</text>
+  <text x="{{ x1 + 200*si + 20 }}" y="{{y1 + 10 + 70}}" style="text-anchor:end;dominant-baseline:hanging">{{ sum(subjects[subject].get(g, 0) for g in gradelist) }}</text>
+  {% set maxcount = max(subjects[subject].get(g,0) for g in gradelist) %}
+  {% for i, curgrade in enumerate(reversed(gradelist)) %}
+   {% set pc = float(subjects[subject].get(curgrade,0)) / maxcount %}
+   <rect x="{{ x1 + 200*si + i*16 + 28 }}" y="{{y1 + 10 + 50*(1-pc)}}" width="15" height="{{ 50*pc }}" class="{{ curgrade }}" />
+   <rect x="{{ x1 + 200*si + i*16 + 28 }}" y="{{y1 + 10 + 53}}" width="15" height="12" class="{{ curgrade }}" />
+   <text x="{{ x1 + 200*si + i*16 + 28 + 7.5}}" y="{{y1 + 10 + 55}}" class="name grade" style="text-anchor:middle;dominant-baseline:hanging">{{ curgrade }}</text>
+   <text x="{{ x1 + 200*si + i*16 + 28 + 7.5}}" y="{{y1 + 10 + 70}}" style="text-anchor:middle;dominant-baseline:hanging">{{ subjects[subject].get(curgrade,0) }}</text>
+  {% end %}
+ </g>
+
+ {% for i, section in enumerate(sorted(sections)) %}
+  {% set maxcount = max(sections[sc].get(subject, {}).get(g,0) for g in gradelist for sc in sections) %}
+  <g class="histogram">
+   {% if si == 0 %}
+    <text x="{{ x1 }}" y="{{ y2 + h2*i + 50 }}" class="section">{{ section }}</text>
+    <text x="{{ x1 }}" y="{{ y2 + h2*i + 52 }}" class="section" style="font-size:8px;dominant-baseline:hanging">section</text>
+   {% end %}
+   <text x="{{ x1 + 200*si + 20 }}" y="{{y2 + h2*i + 10 + 70}}" style="text-anchor:end;dominant-baseline:hanging">{{ sum(sections[section].get(subject, {}).get(g, 0) for g in gradelist) }}</text>
+   {% for j, curgrade in enumerate(reversed(gradelist)) %}
+    {% set pc = float(sections[section].get(subject, {}).get(curgrade,0)) / maxcount %}
+    <rect x="{{ x1 + 200*si + j*16 + 28 }}" y="{{y2 + h2*i + 10 + 50*(1-pc)}}" width="15" height="{{ 50*pc }}" class="{{ curgrade }}" />
+    <rect x="{{ x1 + 200*si + j*16 + 28 }}" y="{{y2 + h2*i + 10 + 53}}" width="15" height="12" class="{{ curgrade }}" />
+    <text x="{{ x1 + 200*si + j*16 + 28 + 7.5}}" y="{{y2 + h2*i + 10 + 55}}" class="name grade" style="text-anchor:middle;dominant-baseline:hanging">{{ curgrade }}</text>
+    <text x="{{ x1 + 200*si + j*16 + 28 + 7.5}}" y="{{y2 + h2*i + 10 + 70}}" style="text-anchor:middle;dominant-baseline:hanging">{{ sections[section].get(subject, {}).get(curgrade,0) }}</text>
+   {% end %}
+  </g>
+
+ {% end %}
+
+ {% set pcs = [sections[sc].get(sub, {}).get('MARKS', 0) / sections[sc].get(sub, {}).get('MAX MARKS', 1) for sc in sorted(sections) for sub in subjects] %}
+ {% set pcmin = min(x for x in pcs if x > 0) %}
+ {% set pcrange = max(pcs) - pcmin %}
+ <g class="sectioncomparison">
+  {% for i, section in enumerate(sorted(sections)) %}
+   {% if sections[section].get(subject, {}).get('MAX MARKS', 0) %}
+    {% set pc = sections[section].get(subject, {}).get('MARKS', 0) / sections[section].get(subject, {}).get('MAX MARKS', 1) %}
+    <text x="{{ x1 + 200*si + 20 }}" y="{{ y3 + i*h }}" style="text-anchor:end;dominant-baseline:hanging;font-weight:bold">{{ section }}</text>
+    <rect x="{{ x1 + 200*si + 25 }}" y="{{ y3 + i*h - 2 }}" width="25" height="{{ h - 2 }}" class="{{ grade({'MARKS':pc, 'MAX MARKS':1.0}) }}" />
+    <text x="{{ x1 + 200*si + 49 }}" y="{{ y3 + i*h }}" style="text-anchor:end;dominant-baseline:hanging" class="grade">{{ '%2.0f%%' % (100 * pc) }}</text>
+    <rect x="{{ x1 + 200*si + 52 }}" y="{{ y3 + i*h + 2 }}" width="{{ 20 + 100 * (pc - pcmin)/pcrange }}" height="5" />
+   {% end %}
+  {% end %}
+ </g>
+{% end %}
+</svg>
+
+</body></html>
