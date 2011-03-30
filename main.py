@@ -3,7 +3,7 @@
 '''
 Usage: main.py marks-file.csv [sort]
 
-Format of marks file:
+Format of marks file is below:
 Roll,Name,English,Mathematics,Social Science,Science,Tamil,French,Hindi,Sanskrit,IT,CompScience
 A-1,ABHIJIT P,120/200,106/180,123/200,139/200,0/0,0/0,149/200,0/0,0/0,35/50
 '''
