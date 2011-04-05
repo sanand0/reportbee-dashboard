@@ -8,8 +8,7 @@ Running on Windows
 2. Install [SetupTools](http://pypi.python.org/pypi/setuptools#files) for the version of Python you've installed. (e.g. `setuptools-0.6c11.win32-py2.7.exe` if you installed Python 2.7)
 3. On the Command Prompt, go to the folder where you downloaded this repository, and type:
 
-    easy_install tornado
-    easy_install django
+    easy_install django tornado
 
 4. Download this repository. On the command prompt, where this repository is saved, run:
 
